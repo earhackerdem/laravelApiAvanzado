@@ -32,10 +32,12 @@ class ProductControllerTest extends TestCase {
             'name' => 'Hola',
             'price' => 1000,
         ];
-        $response = $this->postJson('/api/products', $data);
 
-        $response->assertSuccessful();
-        // $response->assertHeader('content-type', 'application/json');
+        $response = $this->json('POST', '/api/products', $data);
+
+        $response
+            ->assertSuccessful()
+            ->assertHeader('content-type', 'application/json');
         $this->assertDatabaseHas('products', $data);
     }
 
@@ -51,7 +53,7 @@ class ProductControllerTest extends TestCase {
 
         $response = $this->patchJson("/api/products/{$product->getKey()}", $data);
         $response->assertSuccessful();
-        // $response->assertHeader('content-type', 'application/json');
+        $response->assertHeader('content-type', 'application/json');
     }
 
     public function test_show_product()
@@ -62,19 +64,22 @@ class ProductControllerTest extends TestCase {
         $response = $this->getJson("/api/products/{$product->getKey()}");
 
         $response->assertSuccessful();
-        // $response->assertHeader('content-type', 'application/json');
+        $response->assertHeader('content-type', 'application/json');
     }
 
     public function test_delete_product()
     {
         /** @var Product $product */
         $product = Product::factory()->create();
+        $otherProduct =  Product::factory()->create();
 
         $response = $this->deleteJson("/api/products/{$product->getKey()}");
 
-        $response->assertSuccessful();
-        // $response->assertHeader('content-type', 'application/json');
-        $this->assertDeleted($product);
+        $response
+            ->assertSuccessful()
+            ->assertHeader('content-type', 'application/json');
+        $this->assertDatabaseMissing('products',['name'=>$product->name,'price'=>$product->price]);
+        $this->assertDatabaseCount('products', 1);
     }
 
 }
