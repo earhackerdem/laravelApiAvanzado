@@ -27,28 +27,42 @@ class SendNewsletterCommand extends Command
      */
     public function handle(): void
     {
-        $emails = $this->arguments('emails');
+        $userEmails = $this->argument('emails');
 
         $builder = User::query();
 
-        if ($emails) {
-            $builder->whereIn('email', $emails);
+        if ($userEmails) {
+
+            $builder->whereIn('email', $userEmails);
         }
 
-        $count = $builder->count();
+        $builder->whereNotNull('email_verified_at');
 
-        if ($count) {
-            $this->output->createProgressBar($count);
+        if ($count = $builder->count()) {
 
-            $builder->whereNotNull('email_verified_at')
-                ->each(function (User $user) {
+            $this->info("Se enviaran {$count} correos");
+
+            if ($this->confirm('¿Estas de acuerdo?')) {
+
+                $this->output->progressStart($count);
+
+                $builder->each(function (User $user) {
+
                     $user->notify(new NewsletterNotification());
+
                     $this->output->progressAdvance();
                 });
-            $this->info("Se enviaron {$count} correos");
-            $this->output->progressFinish();
-        }
 
-        $this->info('No se envío ningún correo');
+                $this->info(" Se enviaron {$count} correos");
+
+                $this->output->progressFinish();
+
+            } else {
+                $this->info('No se envío ningún correo');
+            }
+        } else {
+
+            $this->info('No se envío ningún correo');
+        }
     }
 }
