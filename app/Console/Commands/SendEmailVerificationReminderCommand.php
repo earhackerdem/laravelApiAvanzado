@@ -3,40 +3,33 @@
 namespace App\Console\Commands;
 
 use App\Models\User;
-use App\Notifications\NewsletterNotification;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
-class SendNewsletterCommand extends Command
+class SendEmailVerificationReminderCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'send:newsletter {emails?*}';
+    protected $signature = 'send:reminder';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Envia un correo electronico';
+    protected $description = 'Envia un correo electronico a los usuarios que no han verificado su cuenta despues de haberse registraod hace una semana';
 
     /**
      * Execute the console command.
      */
     public function handle(): void
     {
-        $userEmails = $this->argument('emails');
-
-        $builder = User::query();
-
-        if ($userEmails) {
-
-            $builder->whereIn('email', $userEmails);
-        }
-
-        $builder->whereNotNull('email_verified_at');
+        $builder = User::query()
+            ->whereDate('created_at', '=', Carbon::now()->subDays(7)->format('Y-m-d'))
+            ->whereNull('email_verified_at');
 
         if ($count = $builder->count()) {
 
@@ -48,20 +41,22 @@ class SendNewsletterCommand extends Command
 
                 $builder->each(function (User $user) {
 
-                    $user->notify(new NewsletterNotification());
+                    $user->sendEmailVerificationNotification();
 
                     $this->output->progressAdvance();
+
                 });
 
                 $this->info(" Se enviaron {$count} correos");
 
                 $this->output->progressFinish();
 
-            } else {
+            }else{
+
                 $this->info('Operación cancelada. No se envío ningún correo');
             }
-        } else {
 
+        }else{
             $this->info('No hay correos por enviar');
         }
     }
