@@ -13,7 +13,7 @@ class SendEmailVerificationReminderCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'send:reminder';
+    protected $signature = 'send:reminder {method=user}';
 
     /**
      * The console command description.
@@ -27,6 +27,34 @@ class SendEmailVerificationReminderCommand extends Command
      */
     public function handle(): void
     {
+        $method  = $this->argument('method');
+
+        if ($method == 'user') {
+            $this->handleForUser();
+        } else {
+            $this->handleforApi();
+        }
+    }
+
+    public function handleforApi()
+    {
+
+        $builder = User::query()
+            ->whereDate('created_at', '=', Carbon::now()->subDays(7)->format('Y-m-d'))
+            ->whereNull('email_verified_at');
+
+        if ($builder->count()) {
+
+            $builder->each(function (User $user) {
+
+                $user->sendEmailVerificationNotification();
+            });
+        }
+    }
+
+    public function handleForUser()
+    {
+
         $builder = User::query()
             ->whereDate('created_at', '=', Carbon::now()->subDays(7)->format('Y-m-d'))
             ->whereNull('email_verified_at');
@@ -44,19 +72,16 @@ class SendEmailVerificationReminderCommand extends Command
                     $user->sendEmailVerificationNotification();
 
                     $this->output->progressAdvance();
-
                 });
 
                 $this->info(" Se enviaron {$count} correos");
 
                 $this->output->progressFinish();
-
-            }else{
+            } else {
 
                 $this->info('Operación cancelada. No se envío ningún correo');
             }
-
-        }else{
+        } else {
             $this->info('No hay correos por enviar');
         }
     }
