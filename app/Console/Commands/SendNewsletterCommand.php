@@ -13,7 +13,9 @@ class SendNewsletterCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'send:newsletter {emails?*}';
+    protected $signature = 'send:newsletter
+                            {emails?*} : Correos Electronicos a los cuales enviar directamente
+                            {--s|schedule : Si debe ser ejecutado directamente o no}';
 
     /**
      * The console command description.
@@ -29,6 +31,8 @@ class SendNewsletterCommand extends Command
     {
         $userEmails = $this->argument('emails');
 
+        $schedule = $this->option('schedule');
+
         $builder = User::query();
 
         if ($userEmails) {
@@ -42,7 +46,7 @@ class SendNewsletterCommand extends Command
 
             $this->info("Se enviaran {$count} correos");
 
-            if ($this->confirm('¿Estas de acuerdo?')) {
+            if ($this->confirm('¿Estas de acuerdo?') || $schedule) {
 
                 $this->output->progressStart($count);
 
