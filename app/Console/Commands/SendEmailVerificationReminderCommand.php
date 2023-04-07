@@ -29,10 +29,13 @@ class SendEmailVerificationReminderCommand extends Command
     {
         $method  = $this->argument('method');
 
-        if ($method == 'user') {
-            $this->handleForUser();
-        } else {
+        if ($method !== 'user') {
+
             $this->handleforApi();
+
+        } else {
+
+            $this->handleForUser();
         }
     }
 
