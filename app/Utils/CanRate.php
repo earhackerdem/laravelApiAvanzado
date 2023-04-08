@@ -2,6 +2,7 @@
 
 namespace App\Utils;
 
+use App\Events\ModelRated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
@@ -39,6 +40,8 @@ trait CanRate
             'score' => $score,
             'rateable_type' => get_class($model)
         ]);
+
+        event(new ModelRated($this,$model, $score));
 
         return true;
     }
