@@ -33,7 +33,7 @@ class ProductRatingController extends Controller
 
     public function approve(Rating $rating)
     {
-        Gate::authorize('admin', $rating);
+        Gate::authorize('admin');
 
         $rating->approve();
         $rating->save();
