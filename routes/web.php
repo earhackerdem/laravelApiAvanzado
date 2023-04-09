@@ -24,6 +24,6 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get( '/exception',function() {
-    throw new Exception('Soy una exception');
+Route::get( '/server-error',function() {
+    abort(500);
 });

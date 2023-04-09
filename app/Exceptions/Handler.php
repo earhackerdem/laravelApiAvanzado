@@ -47,15 +47,16 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $exception)
     {
-        // if ($request->wantsJson()) {
+
         if ($exception instanceof InvalidScore) {
             return response()->json($exception->getMessage());
         }
-        // }
 
-        // return redirect()->back()->with([
-        //     'error' => 'tu mensaje'
-        // ]);
+        if($request->expectsJson()){
+            return response()->json([
+                'error' => $exception->getMessage()
+            ]);
+        }
 
         return parent::render($request, $exception);
     }

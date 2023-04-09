@@ -32,3 +32,7 @@ Route::apiResource('categories', CategoryController::class)
 Route::post('sanctum/token', UserTokenController::class);
 
 Route::post('/newsletter',[NewsletterController::class,'send']);
+
+Route::get( '/server-error',function() {
+    abort(500,'Huy no pa que hizo');
+});
