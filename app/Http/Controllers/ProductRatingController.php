@@ -47,11 +47,13 @@ class ProductRatingController extends Controller
 
         logger()->info('Metodo Index');
 
-        $builder = Rating::query();
-
-        if ($request->has('notApproved')) {
-            $builder->whereNull('approved_at');
-        }
+        $builder = Rating::query()
+            ->when($request->has('approved'), function ($query) {
+                return $query->whereNotNull('approved_at');
+            })
+            ->when($request->has('not_approved'), function ($query) {
+                return $query->whereNull('approved_at');
+            });
 
         return RatingResource::collection($builder->paginate(10));
     }

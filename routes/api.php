@@ -34,13 +34,15 @@ Route::post('sanctum/token', UserTokenController::class);
 
 Route::middleware(['auth:sanctum'])->group(function () {
 
-    Route::post('newsletter', [\App\Http\Controllers\NewsletterController::class, 'send'])->name('send.newsletter');
+    Route::post('newsletter', [NewsletterController::class, 'send'])->name('send.newsletter');
 
     Route::post('products/{product}/rate', [ProductRatingController::class, 'rate']);
 
     Route::post('products/{product}/unrate', [ProductRatingController::class, 'unrate']);
 
     Route::get('rating', [ProductRatingController::class, 'index']);
+
+    Route::post('rating/{rating}/approve', [ProductRatingController::class, 'approve']);
 
 
 });
