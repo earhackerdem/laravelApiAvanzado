@@ -14,6 +14,12 @@
                         </div>
                     @endif
 
+                    <ul>
+                        @foreach ($ratings as $rating)
+                           <li> <b> {{$rating->rateable->name}} </b> <i> Puntuación : {{$rating->score}} </i> por <b>{{$rating->qualifier->name}}</b> </li>
+                        @endforeach
+                    </ul>
+
                     {{ __('You are logged in!') }}
                 </div>
             </div>
