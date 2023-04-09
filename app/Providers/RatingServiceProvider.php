@@ -7,8 +7,8 @@ use App\Models\Rating;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\ServiceProvider;
 
-//php artisan make:provider RatingProvider
-class RatingProvider extends ServiceProvider
+//php artisan make:provider RatingServiceProvider
+class RatingServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
