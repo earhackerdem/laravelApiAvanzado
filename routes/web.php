@@ -23,3 +23,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::get( '/exception',function() {
+    throw new Exception('Soy una exception');
+});
