@@ -42,12 +42,21 @@ class Handler extends ExceptionHandler
     public function register(): void
     {
         $this->reportable(function (Throwable $e) {
-            dd($e);
         });
     }
 
     public function render($request, Throwable $exception)
     {
-        //return response()->json($exception->getMessage());
+        // if ($request->wantsJson()) {
+        if ($exception instanceof InvalidScore) {
+            return response()->json($exception->getMessage());
+        }
+        // }
+
+        // return redirect()->back()->with([
+        //     'error' => 'tu mensaje'
+        // ]);
+
+        return parent::render($request, $exception);
     }
 }
